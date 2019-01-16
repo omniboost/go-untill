@@ -295,10 +295,10 @@ func (c *Client) Do(req *http.Request, responseBody interface{}) (*http.Response
 		faultBody := FaultResponseBody{}
 		errEnvelope := Envelope{Body: &faultBody}
 
-		err := c.Unmarshal(httpResp.Body, &errEnvelope, &responseEnvelope)
-		if err != nil {
-			return httpResp, err
-		}
+		err := c.Unmarshal(httpResp.Body, &responseEnvelope, &errEnvelope)
+		// if err != nil {
+		// 	return httpResp, err
+		// }
 
 		if faultBody.FaultString != "" {
 			err = ErrorResponse{Response: httpResp, FaultResponseBody: faultBody}
@@ -315,20 +315,32 @@ func (c *Client) Unmarshal(r io.Reader, vv ...interface{}) error {
 	}
 
 	wg := sync.WaitGroup{}
+	wg.Add(len(vv))
+	errs := []error{}
 	writers := make([]io.Writer, len(vv))
 
 	for i, v := range vv {
-		wg.Add(1)
 		pr, pw := io.Pipe()
 		writers[i] = pw
 
-		dec := xml.NewDecoder(pr)
+		go func(i int, v interface{}, pr *io.PipeReader, pw *io.PipeWriter) {
+			dec := xml.NewDecoder(pr)
 
-		go func(v interface{}) {
-			defer wg.Done()
 			err := dec.Decode(v)
-			pr.CloseWithError(err)
-		}(v)
+			if err != nil {
+				errs = append(errs, err)
+			}
+
+			// mark routine as done
+			wg.Done()
+
+			// Drain reader
+			io.Copy(ioutil.Discard, pr)
+
+			// close reader
+			// pr.CloseWithError(err)
+			pr.Close()
+		}(i, v, pr, pw)
 	}
 
 	// copy the data in a multiwriter
@@ -339,6 +351,14 @@ func (c *Client) Unmarshal(r io.Reader, vv ...interface{}) error {
 	}
 
 	wg.Wait()
+	if len(errs) == len(vv) {
+		// Everything errored
+		msgs := make([]string, len(errs))
+		for i, e := range errs {
+			msgs[i] = fmt.Sprint(e)
+		}
+		return errors.New(strings.Join(msgs, ", "))
+	}
 	return nil
 }
 
