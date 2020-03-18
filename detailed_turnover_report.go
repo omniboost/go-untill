@@ -89,7 +89,7 @@ type GetDetailedTurnoverReportRequestBody struct {
 	From        DateTime `xml:"Request>From"`
 	Till        DateTime `xml:"Request>Till"`
 	SalesAreaID int      `xml:"Request>SalesAreaId"`
-	Extra       []Extra  `xml":Request>Extra`
+	Extra       []Extra  `xml:"Request>Extra>item"`
 }
 
 func (rb *GetDetailedTurnoverReportRequestBody) SetCredentials(creds Credentials) {
