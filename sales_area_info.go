@@ -146,7 +146,25 @@ type Tables []Table
 type Table struct {
 	FromTable int   `xml:"FromTable"`
 	ToTable   int   `xml:"ToTable"`
-	Extra     Extra `xml:"Extra"`
+	Extra     Extra `xml:"Extra>item"`
 }
 
-type Extra []string
+// <Extra xsi:type="SOAP-ENC:Array" SOAP-ENC:arrayType="NS3:TExtraInfo[2]">
+//   <item xsi:type="NS3:TExtraInfo">
+// 	<Key xsi:type="xsd:string">bookkeeping_turnover</Key>
+// 	<Value xsi:type="xsd:string">800070</Value>
+// 	<Extra xsi:type="SOAP-ENC:Array" SOAP-ENC:arrayType="NS3:TExtraInfo[0]"/>
+//   </item>
+//   <item xsi:type="NS3:TExtraInfo">
+// 	<Key xsi:type="xsd:string">bookkeeping_vat</Key>
+// 	<Value xsi:type="xsd:string">190041</Value>
+// 	<Extra xsi:type="SOAP-ENC:Array" SOAP-ENC:arrayType="NS3:TExtraInfo[0]"/>
+//   </item>
+// </Extra>
+
+type Extra []ExtraItem
+
+type ExtraItem struct {
+	Key   string `xml:"Key"`
+	Value string `xml:"Value"`
+}
