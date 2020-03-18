@@ -1,6 +1,7 @@
 package untill_test
 
 import (
+	"encoding/json"
 	"log"
 	"net/url"
 	"os"
@@ -22,20 +23,25 @@ func TestGetDetailedTurnoverReport(t *testing.T) {
 		Path:   "/soap/ITPAPIPOS",
 	})
 
-	req := client.NewGetDetailedTurnoverReportRequest()
-	from := time.Date(2019, 1, 15, 0, 0, 0, 0, time.UTC)
-	req.RequestBody().From = untill.DateTime{from}
-	till := time.Date(2019, 1, 16, 0, 0, 0, 0, time.UTC)
-	req.RequestBody().Till = untill.DateTime{till}
-	req.RequestBody().SalesAreaID = 5000000259
-	resp, err := req.Do()
+	salesAreasReq := client.NewGetSalesAreasInfoRequest()
+	resp, err := salesAreasReq.Do()
 	if err != nil {
 		t.Error(err)
 	}
 
-	log.Println(len(resp.Transactions))
-	for _, tr := range resp.Transactions {
-		log.Println(tr.ID)
+	for _, sa := range resp.SalesAreas {
+		req := client.NewGetDetailedTurnoverReportRequest()
+		from := time.Date(2019, 4, 6, 0, 0, 0, 0, time.UTC)
+		req.RequestBody().From = untill.DateTime{from}
+		till := time.Date(2019, 4, 7, 0, 0, 0, 0, time.UTC)
+		req.RequestBody().Till = untill.DateTime{till}
+		req.RequestBody().SalesAreaID = sa.ID
+		resp, err := req.Do()
+		if err != nil {
+			t.Error(err)
+		}
+
+		b, _ := json.MarshalIndent(resp.Transactions, "", "  ")
+		log.Printf("%+v", (string(b)))
 	}
-	// log.Printf("%+v", resp)
 }

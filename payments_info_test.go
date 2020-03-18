@@ -1,6 +1,7 @@
 package untill_test
 
 import (
+	"encoding/json"
 	"log"
 	"net/url"
 	"os"
@@ -27,9 +28,6 @@ func TestGetPaymentsInfo(t *testing.T) {
 		t.Error(err)
 	}
 
-	// log.Println(len(resp.Transactions))
-	// for _, tr := range resp.Transactions {
-	// 	log.Println(tr.ID)
-	// }
-	log.Printf("%+v", resp)
+	b, _ := json.MarshalIndent(resp.Payments, "", "  ")
+	log.Printf("%+v", (string(b)))
 }

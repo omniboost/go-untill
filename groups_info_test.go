@@ -1,6 +1,7 @@
 package untill_test
 
 import (
+	"encoding/json"
 	"log"
 	"net/url"
 	"os"
@@ -27,5 +28,6 @@ func TestGroupsInfo(t *testing.T) {
 		t.Error(err)
 	}
 
-	log.Printf("%+v", resp)
+	b, _ := json.MarshalIndent(resp.Groups, "", "  ")
+	log.Printf("%+v", (string(b)))
 }

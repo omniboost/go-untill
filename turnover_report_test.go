@@ -1,6 +1,7 @@
 package untill_test
 
 import (
+	"encoding/json"
 	"log"
 	"net/url"
 	"os"
@@ -31,19 +32,16 @@ func TestGetTurnoverReport(t *testing.T) {
 	// os.Exit(12)
 
 	req := client.NewGetTurnoverReportRequest()
-	from := time.Date(2019, 1, 1, 0, 0, 0, 0, time.UTC)
+	from := time.Date(2019, 1, 22, 0, 0, 0, 0, time.UTC)
 	req.RequestBody().From = untill.DateTime{from}
-	till := time.Date(2019, 1, 2, 0, 0, 0, 0, time.UTC)
+	till := time.Date(2019, 1, 23, 0, 0, 0, 0, time.UTC)
 	req.RequestBody().Till = untill.DateTime{till}
-	req.RequestBody().SalesAreaID = 5000000259
+	req.RequestBody().SalesAreaID = 5000000366
 	resp, err := req.Do()
 	if err != nil {
 		t.Error(err)
 	}
 
-	// log.Println(len(resp.Transactions))
-	// for _, tr := range resp.Transactions {
-	// 	log.Println(tr.ID)
-	// }
-	log.Printf("%+v", resp)
+	b, _ := json.MarshalIndent(resp.Bills, "", "  ")
+	log.Printf("%+v", (string(b)))
 }
