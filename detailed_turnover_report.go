@@ -115,7 +115,7 @@ type GetDetailedTurnoverReportResponseBody struct {
 	ReturnCode    int                  `xml:"return>ReturnCode"`
 	ReturnMessage string               `xml:"return>ReturnMessage"`
 	Transactions  TurnoverTransactions `xml:"return>Data>item"`
-	Extra         Extra                `xml:"return>Extra"`
+	Extra         []Extra              `xml:"return>Extra"`
 }
 
 func (r *GetDetailedTurnoverReportRequest) URL() *url.URL {
@@ -190,7 +190,7 @@ type TransactionOrderItem struct {
 	VatPercent  int             `xml:"VatPercent"`
 	Text        string          `xml:"Text"`
 	HQID        string          `xml:"HqId"`
-	Extra       Extra           `xml:"Extra"`
+	Extra       Extra           `xml:"Extra>item"`
 }
 
 type TransactionBills []TransactionBill

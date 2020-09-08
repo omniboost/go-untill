@@ -110,7 +110,7 @@ type GetDiscountReasonsResponseBody struct {
 	ReturnCode      int             `xml:"return>ReturnCode"`
 	ReturnMessage   string          `xml:"return>ReturnMessage"`
 	Extra           Extra           `xml:"return>Extra"`
-	DiscountReasons DiscountReasons `xml:"return>Data>item"`
+	DiscountReasons DiscountReasons `xml:"return>Items>item"`
 }
 
 func (r *GetDiscountReasonsRequest) URL() *url.URL {
